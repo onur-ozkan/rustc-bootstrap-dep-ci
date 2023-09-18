@@ -1,0 +1,39 @@
+name: bootstrap dependency validation loop
+on: push
+# on:
+#   schedule:
+#     # Runs every 15 minutes
+#     - cron: '*/15 * * * *'
+
+jobs:
+  check-bans:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install cargo-deny
+      run: |
+        cargo install --locked cargo-deny
+
+    - name: check bootstrap dependencies
+      run: |
+        git clone --depth 1 https://github.com/rust-lang/rust
+        cd rust/src/bootstrap
+        cargo-deny check bans --hide-inclusion-graph
+
+  check-advisories:
+    timeout-minutes: 60
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v3
+
+    - name: Install cargo-deny
+      run: |
+        cargo install --locked cargo-deny
+
+    - name: check bootstrap dependencies
+      run: |
+        git clone --depth 1 https://github.com/rust-lang/rust
+        cd rust/src/bootstrap
+        cargo-deny check advisories --hide-inclusion-graph
